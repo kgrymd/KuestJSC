@@ -1,0 +1,395 @@
+/* レスポンシブデザイン */
+@media screen and (max-width: 480px) {
+
+    body {
+        font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', Arial, sans-serif;
+        background-image: url(../img/bgimg.png);
+    }
+
+    header {
+        color: whitesmoke;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        background-color: #242424;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 64px;
+
+        z-index: 1000;
+    }
+
+    .logo-container {
+        padding-top: 20px;
+    }
+
+    .logo {
+        width: 104px;
+        height: 35px;
+        font-weight: bold;
+        padding-bottom: 0px;
+        margin-left: 15px;
+        font-size: 30px;
+        text-align: center;
+    }
+
+    main {
+        margin-top: 80px;
+    }
+
+
+    p {
+        margin-bottom: 0;
+    }
+
+    .rp1 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .rp1 img {
+        max-width: 30%;
+        height: auto;
+        margin-right: 35px;
+    }
+
+    .rp1 p {
+        font-size: 12px;
+    }
+
+
+
+    h1 {
+        font-weight: bold;
+        padding-top: 20px;
+        padding-bottom: 0px;
+        margin-left: 15px;
+        font-size: 30px;
+        text-align: center;
+    }
+
+
+    h2 {
+        text-align: center;
+        margin-bottom: 0;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        background-image: url(../img/kuestkakunin.png);
+        background-size: contain;
+        color: #e4cca4;
+        font-weight: bold;
+    }
+
+    h3 {
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: bold;
+        background-color: #242424;
+        color: whitesmoke;
+    }
+
+    .explanation {
+        font-size: 16px;
+        text-align: center;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    form {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    #user-form {
+        text-align: center;
+    }
+
+    .user-form {
+        display: flex;
+        flex-direction: column;
+    }
+
+
+
+    /* label, */
+    select,
+    input[type="number"],
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"] {
+        width: 50%;
+        font-size: 16px;
+        margin-bottom: 8px;
+        border: 1px solid;
+        border-color: #5c4424;
+        border-radius: 4px;
+        margin-left: 25%;
+        /* ↑ラスト変えたところ */
+        background-color: #e4cc9c;
+        color: #3c2404;
+    }
+
+    label {
+        margin-bottom: 0;
+    }
+
+    /* ↑ラスト変えたところ */
+    .btnArea {
+        text-align: center;
+        margin-bottom: 24px;
+    }
+
+    #eatBtn1,
+    #eatBtn2,
+    #eatBtn3,
+    #eatBtn4,
+    #eatBtn5 {
+        margin-bottom: 0;
+    }
+
+    .btn {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1;
+        box-sizing: border-box;
+        width: 280px;
+        text-decoration: none;
+        color: #3c2404;
+        padding: 14px;
+        background-color: #fff;
+        border-radius: 40px;
+        border: 1px solid #5c4424;
+        transition: background-color 0.3s ease;
+        background-color: #e4cc9c;
+    }
+
+    select {
+        height: 40px;
+    }
+
+
+
+    #nutrients-comparison {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .nutrients {
+        margin-bottom: 12px;
+        text-align: center;
+        /* background-color: #fff; */
+        /* border-radius: 10px; */
+    }
+
+    .nutrients div {
+        background-color: #fff;
+        margin: 4px 30px 0;
+        border-radius: 10px;
+    }
+
+    h3 {
+        border-radius: 10px 10px 0 0;
+    }
+
+
+    #recommended-products {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        /* overflow-x: auto; */
+        width: 100%;
+        /* background-color: #008833; */
+    }
+
+    .recommended-product {
+        display: block;
+        text-align: center;
+        min-width: 100vw;
+    }
+
+    .recommended-product h3 {
+        margin-top: 4px;
+    }
+
+    .recommended-product>div {
+        margin-left: 12px;
+        margin-right: 12px;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        border-radius: 10px;
+        background-image: url(../img/totalnutrients.png);
+    }
+
+    .recommended-product p span {
+        font-weight: bold;
+    }
+
+    .nutrients p {
+        background-image: url(../img/totalnutrients.png);
+    }
+
+    .nutrients div {
+        background-image: url(../img/totalnutrients.png);
+    }
+
+
+    table {
+        margin-left: auto;
+        margin-right: auto;
+        background-image: url(../img/totalnutrients.png);
+    }
+
+    .td1 {
+        text-align: right;
+        font-weight: bold;
+    }
+
+    .td2 {
+        text-align: left;
+    }
+
+    .rp1 .td1 {
+        background-image: url(../img/totalnutrients.png);
+        font-size: 12px;
+    }
+
+    .rp1 .td2 {
+        background-image: url(../img/totalnutrients.png);
+        font-size: 12px;
+    }
+
+
+    #total-cost1,
+    #total-cost2,
+    #total-cost3,
+    #total-cost4,
+    #total-cost5 {
+        text-align: center;
+        font-size: 33px;
+        background-image: url(../img/totalcost.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+    }
+
+    #total-cost1 span,
+    #total-cost2 span,
+    #total-cost3 span,
+    #total-cost4 span,
+    #total-cost5 span {
+        font-weight: bold;
+    }
+
+    #total-cost1 p,
+    #total-cost2 p,
+    #total-cost3 p,
+    #total-cost4 p,
+    #total-cost5 p {
+        color: #3c2404;
+        border-radius: 10px;
+        background-image: url(../img/totalcost.png);
+        background-size: contain;
+        background-repeat: no-repeat;
+        width: 100%;
+    }
+
+
+
+    .nutrients h3 {
+        margin-bottom: 0;
+    }
+
+    .nutrients p:last-of-type,
+    .nutrients p:last-of-type,
+    .nutrients p:last-of-type,
+    .nutrients p:last-of-type,
+    .nutrients p:last-of-type {
+        border-radius: 0 0 10px 10px;
+    }
+
+
+    #total-nutrients1 h3,
+    #total-nutrients2 h3,
+    #total-nutrients3 h3,
+    #total-nutrients4 h3,
+    #total-nutrients5 h3 {
+        background-color: #242424;
+        color: whitesmoke;
+
+    }
+
+
+    /*****************************
+               ハンバーガー 
+     *********************************/
+    .hamburger-menu {
+        position: relative;
+        display: flex;
+    }
+
+
+    .menu-icon {
+        cursor: pointer;
+        display: inline-block;
+        width: 48px;
+        height: 48px;
+        position: absolute;
+        right: 10px;
+        top: -19px;
+        z-index: 1001;
+    }
+
+    nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+    }
+
+    nav li {
+        margin-bottom: 10px;
+    }
+
+    nav a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+
+    nav {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(100%);
+        transition: opacity 0.5s, visibility 0.5s, transform 0.5s;
+
+        background-color: rgba(18, 59, 82, 0.95);
+
+        border-radius: 45%;
+        box-sizing: border-box;
+        padding: 15px;
+        position: fixed;
+        right: -100px;
+        top: -20px;
+        width: 70%;
+        height: 50%;
+        overflow-y: auto;
+    }
+
+    .nav-visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0);
+    }
+
+}

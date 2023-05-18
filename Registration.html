@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品登録フォーム</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-storage-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/registration.css">
+</head>
+
+
+<body>
+
+    <header>
+        <h1>Kuest</h1>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/btn_close.png" alt="menu" class="menu-icon-before">
+                <img src="img/btn_open.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">ログアウト</a></li>
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+
+    <main>
+        <h1>商品登録フォーム</h1>
+        <form id="product-form">
+            <label for="name">商品名:</label>
+            <input type="text" id="name" required>
+            <br>
+            <label for="image">画像:</label>
+            <input type="file" id="image" required>
+            <br>
+            <label for="price">値段:</label>
+            <input type="number" id="price" step="0.01" required>
+            <br>
+            <label for="calories">カロリー:</label>
+            <input type="number" id="calories" step="0.1" required>
+            <br>
+            <label for="protein">タンパク質:</label>
+            <input type="number" id="protein" step="0.1" required>
+            <br>
+            <label for="fat">脂質:</label>
+            <input type="number" id="fat" step="0.1" required>
+            <br>
+            <label for="carbs">炭水化物:</label>
+            <input type="number" id="carbs" step="0.1" required>
+            <br>
+            <label for="category">カテゴリ:</label>
+            <select id="category" required>
+                <option value="osushi">お寿司</option>
+                <option value="pastasalad-okazusalad-hoka">パスタサラダ・おかずサラダほか</option>
+                <option value="salad">サラダ</option>
+                <option value="side-dish">惣菜</option>
+                <option value="gratinーdoria">グラタン・ドリア</option>
+                <option value="spaghettiーpasta">スパゲティ・パスタ</option>
+                <option value="yakisoba-yakiudon-hoka">焼きそば・焼うどんほか</option>
+                <option value="Chinese-style-noodles">中華麺</option>
+                <option value="udon">うどん</option>
+                <option value="soba">そば</option>
+                <option value="sandwich-breadroll">サンドイッチ・ロールパン</option>
+                <option value="obento">お弁当</option>
+                <option value="onigiri">おにぎり</option>
+                <!-- 他のカテゴリを追加していく -->
+            </select>
+            <br><br>
+            <div class="btnArea" id="btnArea">
+                <button class="btn" type="submit">商品を登録する</button>
+            </div>
+        </form>
+    </main>
+    <script src="functions.js"></script>
+    <script src="firebase.js"></script>
+    <script>
+
+
+        async function uploadImage(file) {
+            const storage = firebase.storage();
+            const storageRef = storage.ref();
+            const imageRef = storageRef.child(`images/${file.name}`);
+
+            await imageRef.put(file);
+            const imageUrl = await imageRef.getDownloadURL();
+
+            return imageUrl;
+        }
+
+        $('#product-form').on('submit', async function (event) {
+            event.preventDefault();
+
+            const name = $('#name').val();
+            const imageFile = $('#image')[0].files[0];
+            const imageUrl = await uploadImage(imageFile);
+            const price = parseFloat($('#price').val()).toFixed(2);
+            const calories = parseFloat($('#calories').val());
+            const protein = parseFloat($('#protein').val());
+            const fat = parseFloat($('#fat').val());
+            const carbs = parseFloat($('#carbs').val());
+            const category = $('#category').val();
+
+            // 商品情報をデータベースに保存
+            await db.collection('products').add({
+                name: name,
+                image: imageUrl,
+                price: parseFloat(price),
+                calories: calories,
+                protein: protein,
+                fat: fat,
+                carbs: carbs,
+                category: category
+            });
+
+            // フォームをクリア
+            $('#product-form')[0].reset();
+            alert('商品が登録されました。');
+        });
+
+    </script>
+    <script src="header.js"></script>
+</body>
+
+</html>

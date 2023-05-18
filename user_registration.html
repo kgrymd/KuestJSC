@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー情報登録</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+    <!-- ↑ログイン機能に必要なモジュール -->
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/kuest.css">
+    <style>
+        h2 {
+            font-size: 28px;
+        }
+
+        .mainImage {
+            width: 90%;
+            margin-top: 30px;
+            margin-bottom: 30px;
+            margin-left: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="img/kuestlogo.png" alt="ロゴ" class="logo">
+        </div>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/sp_menu_open.png" alt="menu" class="menu-icon-before">
+                <img src="img/sp_menu_close.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">ログアウト</a></li>
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+    <main>
+        <h2>Create Account!</h2>
+        <img src="img/kuestlogo.png" alt="ロゴ" class="mainImage">
+        <form id="user-registration-form">
+            <div class="user-form">
+                <label for="email">メールアドレス:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="user-form">
+                <label for="password">パスワード:</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="user-form">
+                <label for="height">身長 (cm):</label>
+                <input type="number" id="height" max="300" required>
+                <div class="user-form">
+                    <label for="weight">体重 (kg):</label>
+                    <input type="number" id="weight" max="200" step="0.1" required>
+                </div>
+                <div class="user-form">
+                    <label for="age">年齢:</label>
+                    <input type="number" id="age" required>
+                </div>
+                <div class="user-form">
+                    <label for="gender">性別:</label>
+                    <select id="gender" required>
+                        <option value="male">男性</option>
+                        <option value="female">女性</option>
+                    </select>
+                </div>
+                <br><br>
+                <div class="btnArea">
+                    <button class="btn" type="submit">登録</button>
+                </div>
+        </form>
+    </main>
+
+    <script src="firebase.js"></script>
+    <script src="functions.js"></script>
+    <script>
+        $('#user-registration-form').on('submit', async function (event) {
+            event.preventDefault();
+
+            const email = $('#email').val();
+            const password = $('#password').val();
+
+            // まず、メールアドレスとパスワードでユーザー登録
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                const userId = userCredential.user.uid;
+
+                // 次に、Firestoreにユーザー情報を保存
+                const height = parseFloat($('#height').val());
+                const weight = parseFloat($('#weight').val());
+                const age = parseInt($('#age').val());
+                const gender = $('#gender').val();
+                const eatCount = 0;
+
+                const newWeight = parseFloat($('#weight').val());
+                const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+                await db.collection('users').doc(userId).collection('weightHistory').add({
+                    weight: newWeight,
+                    timestamp: timestamp,
+                });
+
+                const lowActivity = calculateNutrients(height, weight, age, gender, 1.2);
+                const middleActivity = calculateNutrients(height, weight, age, gender, 1.55);
+                const highActivity = calculateNutrients(height, weight, age, gender, 1.725);
+
+                await db.collection('users').doc(userId).collection('dailyIntake').doc('1.2').set(lowActivity);
+                await db.collection('users').doc(userId).collection('dailyIntake').doc('1.55').set(middleActivity);
+                await db.collection('users').doc(userId).collection('dailyIntake').doc('1.725').set(highActivity);
+
+                const userInfo = {
+                    height: height,
+                    weight: weight,
+                    age: age,
+                    gender: gender,
+                    eatCount: eatCount,
+                };
+
+                await db.collection('users').doc(userId).set(userInfo);
+
+                $('#user-registration-form')[0].reset();
+                window.location.href = "kuest.html";
+            } catch (error) {
+                console.error(error);
+                alert('ユーザー登録に失敗しました。');
+            }
+        });
+
+
+    </script>
+    <script src="header.js"></script>
+</body>
+
+</html>

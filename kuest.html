@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuest</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+
+
+    <link rel="stylesheet" href="css/reset.css">
+
+    <link rel="stylesheet" href="css/kuest.css">
+    <style>
+        #nutrients-comparison {
+            display: flex;
+            justify-content: space-around;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="img/kuestlogo.png" alt="ロゴ" class="logo">
+        </div>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/sp_menu_open.png" alt="menu" class="menu-icon-before">
+                <img src="img/sp_menu_close.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;&nbsp;&nbsp;&nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> &nbsp;マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;&nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">&nbsp;&nbsp;&nbsp;&nbsp;ログアウト</a></li>
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+    <main>
+
+
+        <p class="explanation">今食べるべき商品をおすすめします</p>
+        <form id="user-form">
+            <div class="user-form">
+                <label for="howManyMeals">今日は何食食べますか？:</label>
+                <input type="number" id="howManyMeals" min="0" step="any">
+            </div>
+            <div class="user-form">
+                <label for="activity-level">活動レベル:</label>
+                <select id="activity-level" required>
+                    <option value="1.2">低い (オフィスワーク)</option>
+                    <option value="1.55">中程度 (軽い運動)</option>
+                    <option value="1.725">高い (激しい運動)</option>
+                </select>
+            </div>
+            <div class="user-form">
+                <label for="budget">予算:</label>
+                <input type="number" id="budget" min="0" placeholder="オプション" step="any">
+            </div>
+            <select id="categories" class="selectpicker" multiple data-live-search="true" title="カテゴリを選ぶ">
+                <option value="osushi">お寿司</option>
+                <option value="pastasalad-okazusalad-hoka">パスタサラダ・おかずサラダほか</option>
+                <option value="salad">サラダ</option>
+                <option value="side-dish">惣菜</option>
+                <option value="gratinーdoria">グラタン・ドリア</option>
+                <option value="spaghettiーpasta">スパゲティ・パスタ</option>
+                <option value="yakisoba-yakiudon-hoka">焼きそば・焼うどんほか</option>
+                <option value="Chinese-style-noodles">中華麺</option>
+                <option value="udon">うどん</option>
+                <option value="soba">そば</option>
+                <option value="sandwich-breadroll">サンドイッチ・ロールパン</option>
+                <option value="obento">お弁当</option>
+                <option value="onigiri">おにぎり</option>
+            </select>
+
+            <br><br>
+            <div class="btnArea" id="btnArea">
+                <button class="btn" type="submit">クエストを確認</button>
+            </div>
+        </form>
+
+        <div id="user-nutrients" class="nutrients">
+        </div>
+        <div id="eatthis"></div>
+
+
+        <div id="recommended-products">
+            <div>
+                <div id="total-nutrients1" class="nutrients">
+                </div>
+                <div id="recommended-product1" class="recommended-product"></div>
+                <div id="total-cost1" class="nutrients"></div>
+                <div class="btnArea" id="eatBtn1">
+                </div>
+            </div>
+            <div>
+                <div id="total-nutrients2" class="nutrients">
+                </div>
+                <div id="recommended-product2" class="recommended-product"></div>
+                <div id="total-cost2" class="nutrients"></div>
+                <div class="btnArea" id="eatBtn2">
+                </div>
+            </div>
+            <div>
+                <div id="total-nutrients3" class="nutrients">
+                </div>
+                <div id="recommended-product3" class="recommended-product"></div>
+                <div id="total-cost3" class="nutrients"></div>
+                <div class="btnArea" id="eatBtn3">
+                </div>
+            </div>
+            <div>
+                <div id="total-nutrients4" class="nutrients">
+                </div>
+                <div id="recommended-product4" class="recommended-product"></div>
+                <div id="total-cost4" class="nutrients"></div>
+                <div class="btnArea" id="eatBtn4">
+                </div>
+            </div>
+            <div>
+                <div id="total-nutrients5" class="nutrients">
+                </div>
+                <div id="recommended-product5" class="recommended-product"></div>
+                <div id="total-cost5" class="nutrients"></div>
+                <div class="btnArea" id="eatBtn5">
+                </div>
+            </div>
+
+        </div>
+    </main>
+    <script src="functions.js"></script>
+    <script src="firebase.js"></script>
+
+    <script>
+
+        let userId = "";
+        let height, weight, age, gender, activityLevel;
+        let eatCount;
+        let recommendedDailyIntake;
+        let actualIntake = {
+            calories: 0,
+            protein: 0,
+            fat: 0,
+            carbs: 0,
+        }
+
+        let howManyMeals;
+
+        let totalNutrients;
+
+
+
+
+
+
+        let bestCombination1;
+        let bestCombination2;
+        let bestCombination3;
+        let bestCombination4;
+        let bestCombination5;
+
+        $('#user-form').on('submit', async function (event) {
+            event.preventDefault();
+
+            setTimeout(function () {
+                smoothScrollTo("#btnArea");
+            }, 300);
+
+            $("#user-nutrients").empty();
+
+            for (let i = 1; i <= 5; i++) {
+                $("#total-nutrients" + i).empty();
+            }
+
+
+            userId = firebase.auth().currentUser.uid;
+            activityLevel = $('#activity-level').val();
+            console.log('activityLevel:', activityLevel);
+            const budget = parseFloat($('#budget').val()) || Infinity;
+
+            howManyMeals = parseFloat($("#howManyMeals").val());
+
+            const RDI = await db.collection('users').doc(userId).collection('dailyIntake').doc(activityLevel).get();
+            // ↑選択した活動量での1日の推奨量を取り出す
+
+            const recommendedDailyIntake = RDI.data();
+            console.log('recommendedDailyIntake', recommendedDailyIntake);
+            await db.collection('users').doc(userId).set({ recommendedDailyIntake }, { merge: true });
+
+
+            const userDetails = await fetchUserDetails(userId);
+            if (!userDetails) {
+                return;
+            }
+
+            ({ height, weight, age, gender, eatCount } = userDetails);
+
+            const now = new Date();
+            const jpNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+
+            const year = jpNow.getFullYear();
+            const month = (jpNow.getMonth() + 1).toString().padStart(2, "0");
+            const day = jpNow.getDate().toString().padStart(2, "0");
+
+            let dateString = `${year}-${month}-${day}`;
+            console.log('dateString: ', dateString);
+
+            if (eatCount === 0) {
+                isThisTheFirstMeal0(userId);
+                actualIntake = await calculateTotalValues0(userId, dateString);
+            } else {
+                const exists = await isThisTheFirstMealN(userId); // ドキュメントが存在するかどうかを確認
+                if (!exists) {
+                    eatCount = 0;
+                    console.log("eatCountの確認: ", eatCount);
+                    actualIntake = await calculateTotalValues0(userId, dateString);
+
+                } else {
+                    actualIntake = await calculateTotalValues(userId, dateString);
+                }
+            };
+            console.log('actualIntake:', actualIntake);
+
+
+            const oneintake = oneIntake(howManyMeals, recommendedDailyIntake, actualIntake, eatCount);
+            const userNutrients = oneintake;
+            console.log("userNutrients: ", userNutrients);
+
+            $('#user-nutrients').append(`
+                    <div>
+                    <h3>一食で摂取すべき栄養素:</h3>
+                    <table>
+                        <tr>
+                            <td class="td1">カロリー:&nbsp;</td> 
+                            <td class="td2"> ${userNutrients.calories.toFixed(2)} kcal<td>
+                        </tr>
+                        <tr>
+                            <td class="td1">タンパク質:&nbsp;</td> 
+                            <td class="td2"> ${userNutrients.protein.toFixed(2)} g</td>
+                        </tr>
+                        <tr>
+                            <td class="td1">脂質:&nbsp;</td> 
+                            <td class="td2"> ${userNutrients.fat.toFixed(2)} g</td>
+                        </tr>
+                        <tr>
+                            <td class="td1">炭水化物:&nbsp;</td> 
+                            <td class="td2"> ${userNutrients.carbs.toFixed(2)} g</td>
+                        
+                        </tr>
+                    </table>
+                    </div>
+                `);
+
+            const products = await fetchProducts();
+            const targetCategories = getSelectedCategories();//カテゴリを複数選択できるようにした
+            const filteredProducts = filterProductsByCategories(products, targetCategories);//カテゴリでフィルタリング
+            const combinations1 = getAllCombinationsOfSize(filteredProducts, 1);//カテゴリでフィルタリングされた商品から組み合わせを作成
+            const combinations2 = getAllCombinationsOfSize(filteredProducts, 2);//カテゴリでフィルタリングされた商品から組み合わせを作成
+            const combinations3 = getAllCombinationsOfSize(filteredProducts, 3);//カテゴリでフィルタリングされた商品から組み合わせを作成
+            const allCombinations = combinations1.concat(combinations2).concat(combinations3);
+            const filteredCombinations = filterCombinationsByBudget(allCombinations, budget);
+            const bestCombinations = findBestProductCombinations(userNutrients, filteredCombinations, 5);
+            bestCombination1 = bestCombinations[0];
+            bestCombination2 = bestCombinations[1];
+            bestCombination3 = bestCombinations[2];
+            bestCombination4 = bestCombinations[3];
+            bestCombination5 = bestCombinations[4];
+            console.log("bestCombinations: ", bestCombinations);//確認用
+            console.log("bestCombination: ", bestCombination1);//確認用
+            console.log("bestCombination: ", bestCombination2);//確認用
+            console.log("bestCombination: ", bestCombination3);//確認用
+            console.log("bestCombination: ", bestCombination4);//確認用
+            console.log("bestCombination: ", bestCombination5);//確認用
+
+            totalNutrients1 = getCombinedNutrients(bestCombination1);//選ばれた組み合わせのカロリーとマクロ栄養素の値の合計
+            totalNutrients2 = getCombinedNutrients(bestCombination2);//選ばれた組み合わせのカロリーとマクロ栄養素の値の合計
+            totalNutrients3 = getCombinedNutrients(bestCombination3);//選ばれた組み合わせのカロリーとマクロ栄養素の値の合計
+            totalNutrients4 = getCombinedNutrients(bestCombination4);//選ばれた組み合わせのカロリーとマクロ栄養素の値の合計
+            totalNutrients5 = getCombinedNutrients(bestCombination5);//選ばれた組み合わせのカロリーとマクロ栄養素の値の合計
+
+
+            $('#eatthis').html(`<h2>これを食え</h2>`);
+
+            for (let i = 1; i <= 5; i++) {
+                $('#eatBtn' + i).html(`<button id="eatButton${i}" class="btn">食べた</button>`);
+            }
+
+
+            const combinationList = [bestCombination1, bestCombination2, bestCombination3, bestCombination4, bestCombination5];
+
+            for (let i = 0; i < combinationList.length; i++) {
+                $('#recommended-product' + (i + 1)).html(
+                    combinationList[i]
+                        .map(
+                            (product) => `
+            <div>
+                <h3>${product.data.name}</h3>
+                <div class="rp1">
+                    <img src="${product.data.image}" width="200">
+                    <div>
+                    <table>
+                        <tr>
+                            <td class="td1">カロリー:&nbsp;</td> 
+                            <td class="td2">${product.data.calories}kcal</td>
+                        </tr>
+                        <tr>
+                            <td class="td1">タンパク質:&nbsp;</td> 
+                            <td class="td2">${product.data.protein}g</td>
+                        </tr>
+                        <tr>
+                            <td class="td1">脂質:&nbsp;</td> 
+                            <td class="td2">${product.data.fat}g</td>
+                        </tr>
+                        <tr>
+                            <td class="td1">炭水化物:&nbsp;</td> 
+                            <td class="td2">${product.data.carbs}g</td>
+                        </tr>
+                    </table>
+                    </div>
+                </div>
+                <p><span>値段: </span>¥${product.data.price}</p>
+            </div>
+        `
+                        )
+                        .join('')
+                );
+            }
+
+
+
+            const totalNutrientsArray = [totalNutrients1, totalNutrients2, totalNutrients3, totalNutrients4, totalNutrients5];
+
+            for (let i = 0; i < totalNutrientsArray.length; i++) {
+                $('#total-nutrients' + (i + 1)).append(`
+        <div>
+            <h3>おすすめ商品の合計栄養素:</h3>
+            <table>
+                <tr>
+                    <td class="td1">カロリー:&nbsp;</td> 
+                    <td class="td2">${totalNutrientsArray[i].calories.toFixed(2)} kcal</td>
+                </tr>
+                <tr>
+                    <td class="td1">タンパク質:&nbsp;</td> 
+                    <td class="td2">${totalNutrientsArray[i].protein.toFixed(2)} g</td>
+                </tr>
+                <tr>
+                    <td class="td1">脂質:&nbsp;</td> 
+                    <td class="td2">${totalNutrientsArray[i].fat.toFixed(2)} g</td>
+                </tr>
+                <tr>
+                    <td class="td1">炭水化物:&nbsp;</td> 
+                    <td class="td2">${totalNutrientsArray[i].carbs.toFixed(2)} g</td>
+                </tr>   
+            <table>     
+        </div>
+    `);
+            }
+
+
+
+            // おすすめ商品の合計金額を表示
+            const totalCost1 = getTotalCost(bestCombination1);
+            const totalCost2 = getTotalCost(bestCombination2);
+            const totalCost3 = getTotalCost(bestCombination3);
+            const totalCost4 = getTotalCost(bestCombination4);
+            const totalCost5 = getTotalCost(bestCombination5);
+
+
+
+            const totalCostArray = [totalCost1, totalCost2, totalCost3, totalCost4, totalCost5];
+
+            for (let i = 0; i < totalCostArray.length; i++) {
+                $('#total-cost' + (i + 1)).html(`
+        <p><span>¥</span>${totalCostArray[i].toFixed(2)}</p>
+    `);
+            }
+
+        });
+
+
+
+
+
+        // 食べたボタンのイベントリスナー * 5
+        $(document).on("click", "#eatButton1", async function () {
+            const productNutrients = totalNutrients1;
+            const recommendedProducts = bestCombination1;
+
+            saveEatedProducts(userId, recommendedProducts);
+
+            if (eatCount === (howManyMeals - 1)) {
+                eatCount = 0;
+            } else {
+                eatCount++;
+                console.log("eatCountの確認2: ", eatCount);
+            }
+
+            // Firestore に eatCount のデータを保存
+            await updateUserData(userId, { eatCount });
+
+            //指定した食事回数食べたら「食べられないよ」ページに遷移
+            if (eatCount === 0) {
+                window.location.href = "doNotEatMore.html";
+            }
+
+        });
+
+        $(document).on("click", "#eatButton2", async function () {
+            const productNutrients = totalNutrients2;
+            const recommendedProducts = bestCombination2;
+
+            saveEatedProducts(userId, recommendedProducts);
+
+            if (eatCount === (howManyMeals - 1)) {
+                eatCount = 0;
+            } else {
+                eatCount++;
+                console.log("eatCountの確認2: ", eatCount);
+
+            }
+
+            await updateUserData(userId, { eatCount });
+
+            if (eatCount === 0) {
+                window.location.href = "doNotEatMore.html";
+            }
+
+
+        });
+
+        $(document).on("click", "#eatButton3", async function () {
+            const productNutrients = totalNutrients3;
+            const recommendedProducts = bestCombination3;
+
+            saveEatedProducts(userId, recommendedProducts);
+
+            if (eatCount === (howManyMeals - 1)) {
+                eatCount = 0;
+            } else {
+                eatCount++;
+            }
+
+            await updateUserData(userId, { eatCount });
+
+            if (eatCount === 0) {
+                window.location.href = "doNotEatMore.html";
+            }
+
+
+        });
+
+        $(document).on("click", "#eatButton4", async function () {
+            const productNutrients = totalNutrients4;
+            const recommendedProducts = bestCombination4;
+
+            saveEatedProducts(userId, recommendedProducts);
+
+            if (eatCount === (howManyMeals - 1)) {
+                eatCount = 0;
+            } else {
+                eatCount++;
+            }
+
+            await updateUserData(userId, { eatCount });
+
+            if (eatCount === 0) {
+                window.location.href = "doNotEatMore.html";
+            }
+
+        });
+
+        $(document).on("click", "#eatButton5", async function () {
+            const productNutrients = totalNutrients5;
+            const recommendedProducts = bestCombination5;
+
+            saveEatedProducts(userId, recommendedProducts);
+
+            if (eatCount === (howManyMeals - 1)) {
+                eatCount = 0;
+            } else {
+                eatCount++;
+            }
+
+            await updateUserData(userId, { eatCount });
+
+            if (eatCount === 0) {
+                window.location.href = "doNotEatMore.html";
+            }
+
+        });
+
+
+        $(document).ready(function () {
+            $('.selectpicker').selectpicker();
+        });
+        //↑カテゴリ複数選択にbootstrapを適用するため
+
+
+
+
+    </script>
+    <script src="header.js"></script>
+    <script>
+        (async () => {
+            await checkLoginStatus();
+        })();
+    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- bootstrap-select JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品一覧</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-storage-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        p {
+            margin-bottom: 0;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <header>
+        <h1>Kuest</h1>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/btn_close.png" alt="menu" class="menu-icon-before">
+                <img src="img/btn_open.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">ログアウト</a></li>
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+
+    <main>
+        <h1>商品一覧</h1>
+        <div id="user-form">
+            <label for="category">カテゴリ:</label>
+            <select id="category">
+                <option value="">全カテゴリ</option>
+                <option value="onigiri">おにぎり</option>
+                <option value="osushi">お寿司</option>
+                <option value="obento">お弁当</option>
+                <option value="sandwich-breadroll">サンドイッチ・ロールパン</option>
+                <option value="soba">そば</option>
+                <option value="udon">うどん</option>
+                <option value="Chinese-style-noodles">中華麺</option>
+                <option value="yakisoba-yakiudon-hoka">焼きそば・焼うどんほか</option>
+                <option value="spaghettiーpasta">スパゲティ・パスタ</option>
+                <option value="gratinーdoria">グラタン・ドリア</option>
+                <option value="side-dish">惣菜</option>
+                <option value="salad">サラダ</option>
+                <option value="pastasalad-okazusalad-hoka">パスタサラダ・おかずサラダほか</option>
+                <!-- 他のカテゴリを追加していく -->
+            </select>
+        </div>
+        <div class="btnArea" id="btnArea">
+            <button class="btn" id="show-products">商品を表示</button>
+        </div>
+        <div id="product-count"></div>
+        <div id="product-list"></div>
+    </main>
+    <script src="functions.js"></script>
+    <script src="firebase.js"></script>
+    <script>
+
+        var storage = firebase.storage();
+
+        async function fetchProductsByCategory(category) {
+            let query = db.collection('products');
+            if (category) {
+                query = query.where('category', '==', category);
+            }
+            const querySnapshot = await query.get();
+            const products = [];
+            querySnapshot.forEach((doc) => {
+                products.push({ id: doc.id, data: doc.data() });
+            });
+            return products;
+        }
+
+        async function fetchProductImageURL(imageURL) {
+            const imageRef = storage.refFromURL(imageURL);
+            return await imageRef.getDownloadURL();
+        }
+
+        async function renderProducts(category) {
+            const products = await fetchProductsByCategory(category);
+
+            $('#product-count').text(`商品数: ${products.length}`);
+            $('#product-list').empty();
+
+            products.forEach(async (product) => {
+                const productDiv = $('<div class="product"></div>');
+
+                const nameLabel = $('<p></p>').text(`商品名: ${product.data.name}`);
+                productDiv.append(nameLabel);
+
+                const imageURL = await fetchProductImageURL(product.data.image);
+                const productImage = $('<img>').attr('src', imageURL).css('max-width', '200px');
+                productDiv.append(productImage);
+
+                const priceLabel = $('<p></p>').text(`値段: ¥${product.data.price}`);
+                productDiv.append(priceLabel);
+
+                const caloriesLabel = $('<p></p>').text(`カロリー: ${product.data.calories} kcal`);
+                productDiv.append(caloriesLabel);
+
+                const proteinLabel = $('<p></p>').text(`タンパク質: ${product.data.protein} g`);
+                productDiv.append(proteinLabel);
+
+                const fatLabel = $('<p></p>').text(`脂質: ${product.data.fat} g`);
+                productDiv.append(fatLabel);
+
+                const carbsLabel = $('<p></p>').text(`炭水化物: ${product.data.carbs} g`);
+                productDiv.append(carbsLabel);
+
+                const categoryLabel = $('<p></p>').text(`カテゴリ: ${product.data.category}`);
+                productDiv.append(categoryLabel);
+
+                $('#product-list').append(productDiv);
+            });
+        }
+
+        $('#show-products').on('click', async function () {
+            const category = $('#category').val();
+            await renderProducts(category);
+        });
+
+        // ページが読み込まれた時に全カテゴリーの商品を表示
+        $(document).ready(async function () {
+            await renderProducts('');
+        });
+    </script>
+    <script src="header.js"></script>
+    <script>
+        (async () => {
+            await checkLoginStatus();
+        })();
+    </script>
+</body>
+
+</html>

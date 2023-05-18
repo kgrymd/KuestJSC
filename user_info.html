@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー情報表示</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/kuest.css">
+    <style>
+        #user-info {
+            background-color: #ffffff;
+            margin-left: 6rem;
+            margin-right: 6rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #user-info p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .form-container {
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        .form-container>.user-form {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-left: 24px;
+        }
+
+        input[type="number"] {
+            margin-left: 0;
+            margin-bottom: 0;
+            width: 74px;
+            height: 44px;
+            font-size: 32px;
+        }
+
+        .form-container .bt {
+            margin-top: 24px;
+            margin-right: 24px;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 1;
+            box-sizing: border-box;
+            width: 64px;
+            text-decoration: none;
+            color: #3c2404;
+            padding: 14px;
+            background-color: #fff;
+            border-radius: 40px;
+            border: 1px solid #5c4424;
+            transition: background-color 0.3s ease;
+            background-color: #e4cc9c;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="img/kuestlogo.png" alt="ロゴ" class="logo">
+        </div>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/sp_menu_open.png" alt="menu" class="menu-icon-before">
+                <img src="img/sp_menu_close.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">ログアウト</a></li>
+
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+    <main>
+        <form id="update-weight-form">
+            <div class="form-container">
+                <div class="user-form">
+                    <label for="new-weight">新しい体重 (kg):</label>
+                    <input type="number" id="new-weight" step="0.1" required>
+                </div>
+                <div class="btnArea">
+                    <button class="bt" type="submit">更新</button>
+                </div>
+            </div>
+        </form>
+
+
+        <div id="user-info">
+            <p id="user-id"></p>
+            <p id="height"></p>
+            <p id="weight"></p>
+            <p id="age"></p>
+            <p id="gender"></p>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="weight-chart"></canvas>
+        </div>
+
+        <div id="todayIntake"></div>
+        <canvas id="radarChart"></canvas>
+
+        <div class="btnArea" id="rirekiBtn">
+        </div>
+
+
+
+    </main>
+
+    <script src="functions.js"></script>
+    <script src="firebase.js"></script>
+    <script>
+
+        // グローバル変数として radarChart を宣言
+        let radarChart;
+
+        const now = new Date();
+        const jpNow = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
+
+        const year = jpNow.getFullYear();
+        const month = (jpNow.getMonth() + 1).toString().padStart(2, "0");
+        const day = jpNow.getDate().toString().padStart(2, "0");
+
+        let dateString = `${year}-${month}-${day}`;
+        console.log(dateString);//確認用
+
+        async function displayUserInfo() {
+
+
+
+            const userId = firebase.auth().currentUser.uid;
+            const userRef = db.collection('users').doc(userId);
+
+
+            try {
+                const userDoc = await userRef.get();
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    $('#weight').text(` 現体重: ${userData.weight} kg`);
+                } else {
+                    alert('指定されたユーザーIDのデータが見つかりませんでした。');
+                }
+            } catch (error) {
+                console.error("Error getting user document:", error);
+                alert('データの取得に失敗しました。');
+            }
+
+            $("#weight").css({
+                "text-align": "center",
+                "margin-bottom": "0",
+                "padding-top": "4px",
+                "padding-bottom": "4px",
+                "background-image": "url(../img/kuestkakunin.png)",
+                "background-size": "cover",
+                "color": "#e4cca4",
+                "font-weight": "bold"
+            });
+
+            // ユーザー情報が表示された後にグラフを描画
+            await fetchWeightHistoryAndRenderChart();
+            $("#weight-chart").css({
+                "background-image": "url(../img/bg2.png)",
+                "margin": "12px",
+                "padding": "8px",
+                "border-radius": "8px"
+            });
+            $('#todayIntake').html(`<h3>↓今日の摂取量↓</h3>`);
+            await fetchIntakeDataAndRenderRadarChart(userId, dateString); // レーダーチャートの描画
+            $("#radarChart").css({
+                "background-image": "url(../img/bg2.png)",
+                "margin": "12px",
+                "padding": "8px",
+                "border-radius": "8px"
+            });
+            $('#rirekiBtn').html(`<button id="rireki" class="btn" type="submit">過去の摂取量を見る</button>`);
+
+        }
+
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                await displayUserInfo(); // ページが読み込まれたときにユーザー情報を表示する
+            } else {
+                // ログインページにリダイレクトするなどの処理を行う
+            }
+        });
+
+        $(document).ready(async function () {
+            // await displayUserInfo(); // ページが読み込まれたときにユーザー情報を表示する
+
+            $('#rirekiBtn').click(function () {
+                var url = 'intakeHistory.html';
+                window.location.href = url;
+            });
+        });
+
+        $('#update-weight-form').on('submit', async function (event) {
+            event.preventDefault();
+
+
+
+
+            const userId = firebase.auth().currentUser.uid;
+            const newWeight = parseFloat($('#new-weight').val());
+            const timestamp = firebase.firestore.FieldValue.serverTimestamp(); // 現在の日時を取得
+
+            // 'users'コレクションの'weight'フィールドを更新
+            await db.collection('users').doc(userId).update({ weight: newWeight });
+
+            // 'weightHistory'コレクションに新しいデータを追加
+            await db.collection('users').doc(userId).collection('weightHistory').add({
+                weight: newWeight,
+                timestamp: timestamp,
+            });
+
+            const userData = await db.collection('users').doc(userId).get().then(doc => doc.data());
+            const height = userData.height;
+            const age = userData.age;
+            const gender = userData.gender;
+
+
+            const lowActivity = calculateNutrients(height, newWeight, age, gender, 1.2);
+            const middleActivity = calculateNutrients(height, newWeight, age, gender, 1.55);
+            const highActivity = calculateNutrients(height, newWeight, age, gender, 1.725);
+
+            console.log("lowActivity: ", lowActivity);
+            console.log("middleActivity: ", middleActivity);
+            console.log("highActivity: ", highActivity);
+
+            // dailyIntakeコレクションを作成し、その中に"1.2"という名前のオブジェクトを保存
+            await db.collection('users').doc(userId).collection('dailyIntake').doc('1.2').set(lowActivity);
+            // dailyIntakeコレクションを作成し、その中に"1.55"という名前のオブジェクトを保存
+            await db.collection('users').doc(userId).collection('dailyIntake').doc('1.55').set(middleActivity);
+            // dailyIntakeコレクションを作成し、その中に"1.725"という名前のオブジェクトを保存
+            await db.collection('users').doc(userId).collection('dailyIntake').doc('1.725').set(highActivity);
+
+
+
+
+
+            alert('体重が更新されました。');
+            $('#update-weight-form')[0].reset();
+
+            $('#weight').text(`体重: ${newWeight} kg`); //表示されている体重の値を更新
+
+
+            // ユーザー情報が表示された後にグラフを描画
+            await fetchWeightHistoryAndRenderChart();
+            await fetchIntakeDataAndRenderRadarChart(userId, dateString); // レーダーチャートの描画（引数にdateStringを入れて使うように変更(5/1112:03))
+
+        });
+
+        // グローバル変数として weightChart を宣言
+        let weightChart;
+
+        async function fetchWeightHistoryAndRenderChart() {
+            const userId = firebase.auth().currentUser.uid;
+
+            // weightHistoryデータを取得
+            const snapshot = await db.collection('users').doc(userId).collection('weightHistory').orderBy('timestamp').get();
+            const weightHistory = snapshot.docs.map(doc => doc.data());
+
+            // グラフのデータとオプションを設定
+            const chartData = {
+                labels: weightHistory.map(data => new Date(data.timestamp.seconds * 1000).toLocaleDateString()), // 日付ラベル
+                datasets: [{
+                    label: '体重 (kg)',
+                    data: weightHistory.map(data => data.weight),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            };
+            const chartOptions = {
+                scales: {
+                    x: { display: true, title: { display: true, text: '日付' } },
+                    y: { display: true, title: { display: true, text: '体重 (kg)' } }
+                }
+            };
+            // 既存のグラフがある場合は破棄
+            if (weightChart) {
+                weightChart.destroy();
+            }
+
+
+            // グラフを描画
+            const ctx = document.getElementById('weight-chart').getContext('2d');
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: chartOptions
+            });
+        }
+
+    </script>
+    <script src="header.js"></script>
+    <script>
+        (async () => {
+            await checkLoginStatus();
+        })();
+    </script>
+</body>
+
+</html>

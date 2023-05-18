@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>過去の摂取量履歴</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/kuest.css">
+    <style>
+        #user-info {
+            background-color: #ffffff;
+            padding: 1rem;
+            margin: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #user-info p {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="img/kuestlogo.png" alt="ロゴ" class="logo">
+        </div>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/sp_menu_open.png" alt="menu" class="menu-icon-before">
+                <img src="img/sp_menu_close.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">ログアウト</a></li>
+
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+    <main>
+        <p class="explanation">日付を入力してください</p>
+        <form id="user-id-form">
+            <div class="user-form">
+                <label for="date-input">日付:</label>
+                <input type="date" id="date-input" required>
+            </div>
+            <br><br>
+            <div class="btnArea">
+                <button class="btn" type="submit">表示</button>
+            </div>
+        </form>
+
+        <canvas id="radarChart"></canvas>
+
+
+    </main>
+
+    <script src="functions.js"></script>
+    <script src="firebase.js"></script>
+    <script src="header.js"></script>
+
+    <script>
+        // グローバル変数として radarChart を宣言
+        let radarChart;
+
+        //日付用の変数を宣言
+        let dateString;
+
+        (async () => {
+            await checkLoginStatus();
+            const userId = firebase.auth().currentUser.uid;
+
+            $('#user-id-form').on('submit', async function (event) {
+                event.preventDefault();
+
+                dateString = $('#date-input').val(); //ここで日付をdateStringに入れる
+
+                const userRef = db.collection('users').doc(userId);
+
+                // ユーザー情報が表示された後にグラフを描画
+                await fetchIntakeDataAndRenderRadarChart(userId, dateString); // レーダーチャートの描画（引数にdateStringを入れて使うように変更(5/1112:03))
+                $("#radarChart").css({
+                    "background-image": "url(../img/bg2.png)",
+                    "margin": "12px",
+                    "padding": "8px",
+                    "border-radius": "8px"
+                })
+            });
+        })();
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kuest</title>
+    <style>
+        body {
+            background-color: #f2f2f2;
+            font-family: 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url(img/TopImage.jpeg);
+            background-color: rgba(255, 255, 255, 0.1);
+            background-blend-mode: lighten;
+            background-size: cover;
+            background-position: 50% 50%;
+            background-repeat: no-repeat;
+        }
+
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 0 20px;
+            padding-bottom: 60px;
+            box-sizing: border-box;
+        }
+
+        img {
+            width: 208px;
+            height: 71px;
+            text-align: center;
+            margin: 0;
+            margin-bottom: 70px;
+            /* background-color: rgba(0, 0, 0, 0.2); */
+
+        }
+
+        h1 {
+            color: aqua;
+            font-size: 36px;
+            font-weight: 500;
+        }
+
+        p {
+            color: antiquewhite;
+            font-size: 16px;
+            text-align: center;
+            margin: 0 0 20px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        button {
+
+            display: inline-block;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1;
+            box-sizing: border-box;
+            /* width: 280px; */
+            text-decoration: none;
+            color: #3c2404;
+            padding: 12px 30px;
+            background-color: #fff;
+            border-radius: 30px;
+            border: 1px solid #5c4424;
+            transition: background-color 0.3s ease;
+            background-color: #e4cc9c;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</head>
+
+<body>
+    <div class="container">
+        <img src="img/kuestlogo.png" alt="ロゴ" class="logo">
+
+        <p>最寄りの店から今食べるべき商品を提示します</p>
+        <p></p>
+        <button id="button">さっそく使ってみる</button>
+    </div>
+    <script>
+        $("#button").on("click", function () {
+            window.location.href = "user_registration.html";
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>もう食べちゃダメだよ</title>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore-compat.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-auth-compat.js"></script>
+
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- bootstrap-select CSS -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/css/bootstrap-select.min.css">
+
+
+
+    <link rel="stylesheet" href="css/reset.css">
+
+    <link rel="stylesheet" href="css/kuest.css">
+    <style>
+        p {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            padding-top: 80px;
+            padding-bottom: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="img/kuestlogo.png" alt="ロゴ" class="logo">
+        </div>
+        <div class="hamburger-menu">
+            <label for="menu-toggle" class="menu-icon">
+                <img src="img/sp_menu_open.png" alt="menu" class="menu-icon-before">
+                <img src="img/sp_menu_close.png" alt="menu" class="menu-icon-after" style="display: none;">
+            </label>
+            <nav>
+                <ul>
+                    <li><a href="kuest.html"> &nbsp;&nbsp;&nbsp;&nbsp;Kuest</a></li>
+                    <li><a href="user_info.html"> &nbsp;マイページ</a></li>
+                    <li><a href="intakeHistory.html">過去の摂取量</a></li>
+                    <li><a href="products.html"> 商品一覧</a></li>
+                    <li><a href="Registration.html"> 商品を追加</a></li>
+                    <li><a href="map.html"> &nbsp;&nbsp;Map</a></li>
+                    <li><a href="#" onclick="logout()">&nbsp;&nbsp;&nbsp;&nbsp;ログアウト</a></li>
+
+                </ul>
+            </nav>
+        </div>
+
+    </header>
+    <main>
+        <p>今日の食事は終わりです！</p>
+        <img src="img/DoNotEatMore.png" alt="食べられないよ">
+        <p>明日になったらまた食べてね！</p>
+    </main>
+
+    <script src="functions.js"></script>
+    <script src="firebase.js"></script>
+    <script src="header.js"></script>
+    <script>
+        (async () => {
+            await checkLoginStatus();
+        })();
+    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <!-- bootstrap-select JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.18/js/bootstrap-select.min.js"></script>
+
+</body>
+
+</html>
